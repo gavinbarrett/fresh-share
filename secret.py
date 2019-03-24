@@ -2,6 +2,26 @@ import sys
 import binascii
 import secrets
 
+def gcd(a, b, x, y):
+    if a == 0:
+        x = 0
+        y = 1
+        return [b, x, y]
+    g, x1, y1 = gcd(b%a, a, x, y)
+    x = y1 - int((b/a)) * x1
+    y = x1
+    return g, x, y
+
+def mod_inv(k, prime):
+    x = 0
+    y = 0
+    g, x, y = gcd(k, prime, x, y)
+    if g != 1:
+        print('Modulus Error; Exiting program: .py -> line 19')
+        sys.exit(0)
+    else:
+        return ((x % prime) + prime) % prime
+
 def find_field(n):
     ''' Find an appropriate Galois field '''
     i = 2
@@ -21,9 +41,9 @@ def gen_coeff(k, field):
 def horners(x, k, field, coeff, secret):
     ''' Evaluate the polynomial with Horner's method '''
     res = coeff[0]
-    for i in range(1,k-1):
+    for i in range(k):
         res = (res * x + coeff[i]) % field
-    return (res + secret) % field
+    return res
 
 def share(n, k, field, coeffs, secret):
     ''' Split message into shares '''
@@ -38,19 +58,18 @@ def evaluatexs(x, xi, xs, field):
     numer = 1
     denom = 1
     for i in range(len(xs)):
-        if xi == xs[i]:
+        if xi == i:
             continue
-        numer = (numer * (x - xs[i]) % field) % field
-        denom = (denom * (xi - xs[i]) % field) % field
-    return numer / denom
-
+        numer = numer * (x - xs[i]) % field
+        denom = denom * (xi - xs[i]) % field
+    # FIXME: do not divide, rather multiply by mod mult inverse
+    return (numer // denom) % field 
 
 def interpolate(x, xs, ys, field):
-    ''' Use Lagrange interpolation to recover polynomial '''
+    ''' Use Lagrange interpolation to recover the f(x) value '''
     secret = 0
-    for i in range(len(xs)-1):
-        delta = ys[i] * evaluatexs(x, i, xs, field) % field
-        secret += delta % field
+    for i in range(len(xs)):
+        secret = ys[i] * evaluatexs(x, i, xs, field) % field
     return secret
 
 def main():
@@ -74,7 +93,10 @@ def main():
     
         # generate array of randomly selected coefficients
         coeffs = gen_coeff(k, field)
-   
+
+        # add secret as coefficient 0
+        coeffs = [secret] + coeffs
+
         # split secret into shares
         shares = share(n, k, field, coeffs, secret)
     
