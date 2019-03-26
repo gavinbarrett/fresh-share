@@ -2,7 +2,16 @@
 import sys
 import binascii
 import secrets
-from mod_inv import mod_inv
+from src.mod_inv import mod_inv
+
+def int_to_binstring(n):
+    ''' Convert an integer to its corresponding binary string '''
+    binstring = ''
+    while n > 0:
+        tmp = n % 2
+        n = n // 2
+        binstring += tmp
+    return binstring[::-1]
 
 def find_field(n):
     ''' Calculate a Mersenne prime large enough '''
@@ -104,6 +113,7 @@ def Recover():
         field = find_field(size)
 
         secret = interpolate(0, xs, ys, field)
+        #print(int(secret, 10))
         print('The secret is: ' + str(secret))
 
 
