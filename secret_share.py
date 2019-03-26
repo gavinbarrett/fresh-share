@@ -4,13 +4,18 @@ import binascii
 import secrets
 from src.mod_inv import mod_inv
 
-def int_to_binstring(n):
+def pad(bstring):
+    ''' Pad binary string to a multiple of 4 '''
+    a = 8 - (len(bstring) % 8)
+    return '0'*a + bstring
+
+def itb(n):
     ''' Convert an integer to its corresponding binary string '''
     binstring = ''
     while n > 0:
         tmp = n % 2
         n = n // 2
-        binstring += tmp
+        binstring += str(tmp)
     return binstring[::-1]
 
 def find_field(n):
@@ -112,10 +117,20 @@ def Recover():
         size = int(max(ys))
         field = find_field(size)
 
-        secret = interpolate(0, xs, ys, field)
-        #print(int(secret, 10))
-        print('The secret is: ' + str(secret))
-
+        # perform polynomial interpolation to recover the secret
+        secretint = interpolate(0, xs, ys, field)
+        # transform the integer into its corresponding binary
+        secretbin = itb(secretint)
+        if len(secretbin) % 8 != 0:
+            secretbin = pad(secretbin)
+        n = 8
+        chars = [secretbin[i:i+n] for i in range(0, len(secretbin), n)]
+        secret = ''
+        for c in chars:
+            a = int(c,2)
+            b = chr(a)
+            secret += b
+        print("The secret is: " + secret)
 
 def main():
     ''' Attempt to establish a sharing scheme '''
