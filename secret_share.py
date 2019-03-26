@@ -1,35 +1,18 @@
+#!/usr/bin/env python3
 import sys
 import binascii
 import secrets
-
-def gcd(a, b, x, y):
-    if a == 0:
-        x = 0
-        y = 1
-        return [b, x, y]
-    g, x1, y1 = gcd(b%a, a, x, y)
-    x = y1 - int((b/a)) * x1
-    y = x1
-    return g, x, y
-
-def mod_inv(k, prime):
-    x = 0
-    y = 0
-    g, x, y = gcd(k, prime, x, y)
-    if g != 1:
-        print('Modulus Error; Exiting program: .py -> line 19')
-        sys.exit(0)
-    else:
-        return ((x % prime) + prime) % prime
+from mod_inv import mod_inv
 
 def find_field(n):
-    ''' Find an appropriate Galois field '''
-    i = 2
-    prime = 0
-    while prime <= n:
-        prime = (2**i)
-        i += 1
-    return prime
+    ''' Calculate a Mersenne prime large enough '''
+    mersenne = [2, 3, 5, 7, 13, 17, 19, 31, 61, 89, 107, 127, 521, 607, 1279, 2203, 2281, 3217, 4253, 4423, 9689, 9941, 11213]
+    for i in range(len(mersenne)):
+        prime = 2**mersenne[i] - 1
+        if prime > n:
+            return prime
+    print('Could not find a large enough prime')
+    sys.exit(0)
 
 def gen_coeff(k, field):
     ''' Generate coefficients uniformly at random '''
@@ -41,41 +24,38 @@ def gen_coeff(k, field):
 def horners(x, k, field, coeff, secret):
     ''' Evaluate the polynomial with Horner's method '''
     res = coeff[0]
-    for i in range(k):
+    for i in range(1, k):
         res = (res * x + coeff[i]) % field
     return res
 
-def share(n, k, field, coeffs, secret):
-    ''' Split message into shares '''
+def split_secret(n, k, field, coeffs, secret):
+    ''' Split secret into shares '''
     shares = []
+    s = 0
     for i in range(n):
-        s = horners(i, k, field, coeffs, secret)
+        s = horners(i+1, k, field, coeffs, secret)
         shares.append(s)
     return shares
 
-def evaluatexs(x, xi, xs, field):
+def evaluate_poly(x, xi, xs, field):
     ''' Evaluate x values for each y '''
     numer = 1
     denom = 1
-    for i in range(len(xs)):
+    for i in range(0, len(xs)):
         if xi == i:
             continue
         numer = numer * (x - xs[i]) % field
-        denom = denom * (xi - xs[i]) % field
-    # FIXME: do not divide, rather multiply by mod mult inverse
-    return (numer // denom) % field 
+        denom = denom * (xs[xi] - xs[i]) % field
+    return (numer * mod_inv(denom, field)) % field
 
 def interpolate(x, xs, ys, field):
     ''' Use Lagrange interpolation to recover the f(x) value '''
     secret = 0
-    for i in range(len(xs)):
-        secret = ys[i] * evaluatexs(x, i, xs, field) % field
-    return secret
+    for i in range(0, len(xs)):
+        secret += (ys[i] * evaluate_poly(x, i, xs, field)) % field
+    return secret % field
 
-def main():
-    ''' Attempt to establish a sharing scheme '''
-    choice = input('Would you like to do?\n(1) Share a secret\n(2)Recover one\n')
-    if choice == '1':    
+def Share():
         n = int(input('Enter the number of desired shares: '))
         k = int(input('\nEnter the number for the desired threshold\n(Mustn\'t exceed the number of shares!): '))
         if (k > n):
@@ -87,7 +67,7 @@ def main():
     
         # convert message to integer
         secret = int(binascii.hexlify(plaintext.encode('utf-8')),16)
-   
+        print('Processing secret: ' + str(secret)) 
         # generate a secure field
         field = find_field(secret)
     
@@ -98,14 +78,14 @@ def main():
         coeffs = [secret] + coeffs
 
         # split secret into shares
-        shares = share(n, k, field, coeffs, secret)
+        shares = split_secret(n, k, field, coeffs[::-1], secret)
     
         i = 1
         for s in shares:
             print('(' + str(i) + ',' + str(s) + ')')
             i += 1
 
-    elif choice == '2':
+def Recover():
         xs = []
         ys = []
         share_no = int(input('How many shares do you have? '))
@@ -125,9 +105,18 @@ def main():
 
         secret = interpolate(0, xs, ys, field)
         print('The secret is: ' + str(secret))
+
+
+def main():
+    ''' Attempt to establish a sharing scheme '''
+    choice = input('Would you like to do?\n(1) Share a secret\n(2)Recover one\n')
+    if choice == '1':    
+        Share()
+    elif choice == '2':
+        Recover()
     else:
-        print('aborting')
+        print('Invalid input; exiting program')
+
 
 if __name__ == "__main__":
     main()
-# 1,17 2,23 3,29
