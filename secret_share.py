@@ -6,8 +6,8 @@ from src.mod_inv import mod_inv
 
 def pad(bstring):
     ''' Pad binary string to a multiple of 8 '''
-    a = 8 - (len(bstring) % 8)
-    return '0'*a + bstring
+    pad = 8 - (len(bstring) % 8)
+    return '0'*pad + bstring
 
 def itb(n):
     ''' Convert an integer to its corresponding binary string '''
