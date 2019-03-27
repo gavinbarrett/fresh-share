@@ -23,12 +23,11 @@ def bta(secretbin):
     n = 8
     if len(secretbin) % n != 0:
         secretbin = pad(secretbin)
-    chars = [secretbin[i:i+n] for i in range(0, len(secretbin), n)]
+    byte = [secretbin[i:i+n] for i in range(0, len(secretbin), n)]
     secret = ''
-    for c in chars:
-        a = int(c,2)
-        b = chr(a)
-        secret += b
+    for b in byte:
+        s = chr(int(b,2))
+        secret += s
     return secret
 
 def find_field(n):
@@ -82,7 +81,7 @@ def interpolate(x, xs, ys, field):
         secret += (field + ys[i] * evaluate_poly(x, i, xs, field)) % field
     return secret % field
 
-def Share():
+def share():
     ''' Split secret up into n shares '''
     n = int(input('Enter the number of desired shares: '))
     k = int(input('\nEnter the number for the desired threshold\n(Mustn\'t exceed the number of shares!): '))
@@ -114,7 +113,7 @@ def Share():
         print('(' + str(i) + ',' + str(s) + ')\n')
         i += 1
 
-def Recover():
+def recover():
     ''' Try to recover the secret given k shares '''
     xs = []
     ys = []
@@ -140,16 +139,16 @@ def Recover():
     # interpret the binary string as an ascii string
     secret = bta(secretbin)
 
-    print('The secret is: ' + secret + '\n')
+    print('\nThe secret is: ' + secret + '\n')
 
 
 def main():
     ''' Attempt to establish a sharing scheme '''
     choice = input('What would you like to do?\n(1) Share a secret\n(2) Recover one\n')
     if choice == '1':    
-        Share()
+        share()
     elif choice == '2':
-        Recover()
+        recover()
     else:
         print('Invalid input; exiting program')
 
