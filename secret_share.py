@@ -1,7 +1,6 @@
-#!/usr/bin/env python3
-import sys
-import binascii
-import secrets
+from sys import exit
+from binascii import hexlify
+from secrets import randbelow
 from src.mod_inv import mod_inv
 
 def pad(bstring):
@@ -38,13 +37,13 @@ def find_field(n):
         if prime > n:
             return prime
     print('Could not find a large enough prime')
-    sys.exit(0)
+    exit(0)
 
 def gen_coeff(k, field):
     ''' Generate coefficients uniformly at random '''
     coeffs = []
     for i in range(k-1):
-        coeffs.append(secrets.randbelow(field))
+        coeffs.append(randbelow(field))
     return coeffs
 
 def horners(x, k, field, coeff, secret):
@@ -87,13 +86,13 @@ def share():
     k = int(input('\nEnter the number for the desired threshold\n(Mustn\'t exceed the number of shares!): '))
     if (k > n):
         print('\nThreshold above number of shares!\nAborting scheme!\n')
-        sys.exit(0)
+        exit(0)
     
     # get the secret
     plaintext = input('\nEnter the secret you would like to share: ')
     
     # convert message to integer
-    secret = int(binascii.hexlify(plaintext.encode('utf-8')),16)
+    secret = int(hexlify(plaintext.encode('utf-8')),16)
     print('Processing secret: ' + str(secret) + '\n')
 
     # generate a secure field: # |Z_p| >= |M|
@@ -126,7 +125,7 @@ def recover():
         except:
             print('Please enter x and y share values, seperated by a space.')
             print('Exiting scheme')
-            sys.exit(0)
+            exit(0)
     # find max y value    
     max_y = int(max(ys))
     # find an appropriately sized field
