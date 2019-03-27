@@ -52,7 +52,7 @@ def horners(x, k, field, coeff, secret):
     ''' Evaluate the polynomial with Horner's method '''
     res = coeff[0]
     for i in range(1, k):
-        res = (res * x + coeff[i]) % field
+        res = ((res * x) % field + coeff[i]) % field
     return res
 
 def split_secret(n, k, field, coeffs, secret):
@@ -73,13 +73,13 @@ def evaluate_poly(x, xi, xs, field):
             continue
         numer = numer * (x - xs[i]) % field
         denom = denom * (xs[xi] - xs[i]) % field
-    return (numer * mod_inv(denom, field)) % field
+    return numer * mod_inv(denom, field) % field
 
 def interpolate(x, xs, ys, field):
     ''' Use Lagrange interpolation to recover the f(x) value '''
     secret = 0
     for i in range(0, len(xs)):
-        secret += (ys[i] * evaluate_poly(x, i, xs, field)) % field
+        secret += (field + ys[i] * evaluate_poly(x, i, xs, field)) % field
     return secret % field
 
 def Share():
@@ -99,7 +99,6 @@ def Share():
 
     # generate a secure field: # |Z_p| >= |M|
     field = find_field(secret)
-    
     # generate array of randomly selected coefficients
     coeffs = gen_coeff(k, field)
 
@@ -133,7 +132,7 @@ def Recover():
     max_y = int(max(ys))
     # find an appropriately sized field
     field = find_field(max_y)
-
+    
     # perform polynomial interpolation to recover the secret
     secretint = interpolate(0, xs, ys, field)
     # transform the integer into its corresponding binary
@@ -146,7 +145,7 @@ def Recover():
 
 def main():
     ''' Attempt to establish a sharing scheme '''
-    choice = input('Would you like to do?\n(1) Share a secret\n(2)Recover one\n')
+    choice = input('Would you like to do?\n(1) Share a secret\n(2) Recover one\n')
     if choice == '1':    
         Share()
     elif choice == '2':

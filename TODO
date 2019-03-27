@@ -1,2 +1,1 @@
--Fix bug fount in Lagrange interpolation function -> secret seems to only be correctly recovered when shares input to the program are successive in order
 -add support for bitcoin keys

@@ -5,7 +5,7 @@ def egcd(a, b, x, y):
         y = 1
         return [b, x, y]
     g, x1, y1 = egcd(b%a, a, x, y)
-    x = y1 - int((b/a)) * x1
+    x = y1 - int((b//a)) * x1
     y = x1
     return g, x, y
 
