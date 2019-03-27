@@ -145,7 +145,7 @@ def Recover():
 
 def main():
     ''' Attempt to establish a sharing scheme '''
-    choice = input('Would you like to do?\n(1) Share a secret\n(2) Recover one\n')
+    choice = input('What would you like to do?\n(1) Share a secret\n(2) Recover one\n')
     if choice == '1':    
         Share()
     elif choice == '2':
