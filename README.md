@@ -17,6 +17,13 @@ We now see that we can successfully reconstruct the secret from three of the giv
 
 <img src="./imgs/recovering_overd.png" alt="Recovering_Overdetermined"/>
 
-This scheme should achieve information-theoretic security. (i.e. given k-1 valid shares and unbounded computational resources, an adversary cannot uncover any information pertaining to the secret).
+This scheme should achieve information-theoretic security. (i.e. given k-1 valid shares and unbounded computational resources, an adversary cannot uncover any information pertaining to the secret). Anyone attempting to recover the secret with a number of shares that is below the threshold will be unable to do so and the subsequent ciphertext that they receive will also give them no knowledge of the secret.
 
 <img src="./imgs/recovering_insuff.png" alt="Recovering Insufficient"/>
+
+
+
+[How to Share a Secret - Adi Shamir](/docs/howtoshareasecret.pdf)
+
+[Wikipedia - Shamir's Secret Sharing](https://en.wikipedia.org/wiki/Shamir%27s_Secret_Sharing)
+
