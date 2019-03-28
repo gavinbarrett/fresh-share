@@ -17,4 +17,4 @@ We now see that we can successfully reconstruct the secret from three of the giv
 
 This scheme should achieve information-theoretic security. (i.e. given k-1 valid shares and unbounded computational resources, an adversary cannot uncover any information pertaining to the secret).
 
-<img src="./imgs/recovering_insuff" alt="Recovering Insufficient"/>
+<img src="./imgs/recovering_insuff.png" alt="Recovering Insufficient"/>
