@@ -86,7 +86,7 @@ def interpolate(x, xs, ys, field):
 def share():
     ''' Split secret up into n shares '''
     n = int(input('Enter the number of desired shares: '))
-    k = int(input('\nEnter the number for the desired threshold\n(Mustn\'t exceed the number of shares!): '))
+    k = int(input('\nEnter the number for the desired threshold: '))
     if (k > n):
         print('\nThreshold above number of shares!\nAborting scheme!\n')
         exit(0)
@@ -96,7 +96,7 @@ def share():
     
     # convert message to integer
     secret = int(hexlify(plaintext.encode('utf-8')),16)
-    print('Processing secret: ' + str(secret) + '\n')
+    print('\nProcessing secret: ' + str(secret) + '\n')
 
     # generate a secure field: # |Z_p| >= |M|
     field = find_field(secret)
@@ -112,7 +112,8 @@ def share():
     # print shares
     i = 1
     for s in shares:
-        print('(' + str(i) + ',' + str(s) + ')\n')
+        print('Share ' + str(i) + ':')
+        print('(' + str(i) + ', ' + str(s) + ')\n')
         i += 1
 
 def recover():
