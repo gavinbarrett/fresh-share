@@ -36,7 +36,7 @@ def find_field(n):
         prime = (2**mersenne[i]) - 1
         if prime > n:
             return prime
-    print('Could not find a large enough prime')
+    print('Error 101: Could not find a prime sufficient to encode the secret!')
     exit(0)
 
 def gen_coeff(k, field):
