@@ -26,13 +26,15 @@ def main():
                 xs.append(int(x))
                 ys.append(int(y))
             except:
-                print('Please enter x and y share values, seperated by a space.')
+                print('\nPlease enter x and y share values, seperated by a space.')
                 print('Usage: <share_number share value> e.g. 4 56789')
                 print('Exiting scheme')
                 exit(0)
-        
+        if len(xs) != len(ys) or len(xs) != share_num:
+            raise Exception('Share component missing')
+
         # recover the secret
-        s.recover(xs, ys, share_num)
+        s.recover(xs, ys)
 
     else:
         print('Invalid input; exiting program')

@@ -159,11 +159,11 @@ class SecretSharer:
         # print out the shares
         _print_shares(shares)
 
-    def recover(self, xs, ys, num):
+    def recover(self, xs, ys):
         ''' Try to recover the secret given k shares '''
         
         # check that valid sets of shares were entered correctly
-        if not xs or not ys or num == 0 or len(xs) != len(ys) or len(xs) != num:
+        if not xs or not ys or len(xs) != len(ys):
             raise Exception('Shares missing. Unable to process recovery')
         
         # find max y value    
